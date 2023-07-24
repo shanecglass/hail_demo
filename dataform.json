@@ -1,0 +1,7 @@
+{
+  "defaultSchema": "hail_demo",
+  "assertionSchema": "dataform_assertions",
+  "warehouse": "bigquery",
+  "defaultDatabase": "hurricane-detection-demo",
+  "defaultLocation": "us-central1"
+}

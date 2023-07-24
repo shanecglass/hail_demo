@@ -1,0 +1,9 @@
+config {
+  type: "table"
+}
+
+SELECT
+  `<REPLACE WITH remote_function_id OUTPUT>` (uri, <REPLACE WITH output_bucket_id FROM OUTPUTS>)
+FROM
+  `<REPLACE WITH hail_input_object_table_id OUTPUT>`
+
