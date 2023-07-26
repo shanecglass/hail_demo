@@ -40,7 +40,7 @@ resource "google_storage_bucket" "geojson_bucket" {
 resource "google_storage_bucket_object" "geojson_upload" {
   name   = "input/dayone_hail.geojson"
   bucket = google_storage_bucket.geojson_bucket.name
-  source = "${path.root}/input/dayone_hail.geojson"
+  source = "${path.root}/input/hail_forecast.geojson"
 
   depends_on = [ google_storage_bucket.geojson_bucket ]
 }
