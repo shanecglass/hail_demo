@@ -305,7 +305,7 @@ resource "google_bigquery_table" "gcs_objects_hail" {
     autodetect = true
     connection_id = google_bigquery_connection.function_connection.id
     source_uris = ["${google_storage_bucket.geojson_bucket.url}/input/*"]
-    object_metadata = "Simple"
+    object_metadata = Simple
   }
 
   depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]
