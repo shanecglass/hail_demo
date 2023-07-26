@@ -35,9 +35,11 @@ config {
   }
 }
 
-SELECT * EXCEPT(bank_geom),ST_GEOGFROMTEXT(bank_geom) AS geom
+# The sample dataset loads bank_geom as a STRING, so we convert it to a GEOGRAPHY type here
+SELECT * EXCEPT(bank_geom),ST_GEOGFROMTEXT(bank_geom) AS customer_geom
 FROM
-  <REPLACE THIS WITH customer_data_table_id OUTPUT HERE>
+  `hail_demo.sample_customer_data`
 WHERE
-    bank_geom IS NOT NULL
+    state IN ("KY", "WV", "OH", "MI", "IN", "IL")
+    AND bank_geom IS NOT NULL
     AND bank_geom != ""

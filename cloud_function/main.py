@@ -13,6 +13,9 @@ tmpdir = tempfile.mkdtemp()
 converted_file = os.path.join(tmpdir, 'to_load.json')
 # intermediate_file = os.path.join(tmpdir,'intermediate.geojson')
 #Change this line before uploading
+project_id = os.environ["PROJ"]
+output_bucket = os.environ["OUTPUT_BUCKET"]
+region = os.environ["REGION"]
 
 @functions_framework.http
 def list_gcs_files(request):
@@ -21,16 +24,6 @@ def list_gcs_files(request):
     calls = request_json['calls']
     for call in calls:
       gsutil_link = str(call[0])
-    return gsutil_link
-  except Exception as e:
-    return json.dumps({"errorMessage": str(e)}), 400
-
-def output_bucket(request):
-  try:
-    request_json = request.get_json()
-    calls = request_json['calls']
-    for call in calls:
-      gsutil_link = str(call[1])
     return gsutil_link
   except Exception as e:
     return json.dumps({"errorMessage": str(e)}), 400
@@ -102,12 +95,13 @@ def load_to_bq(dest_table, local_json_schema, file_uri):
     load_job = client.load_table_from_uri(
       file_uri,
       dest_table,
-      location="US",  # Must match the destination dataset location.
+      location=region,  # Must match the destination dataset location.
       job_config=job_config,
     )
     load_job.result()  # Waits for the job to complete.
     destination_table = client.get_table(dest_table)
-    print(f"Loaded {destination_table.num_rows} rows.")
+    print(f"Loaded {destination_table.num_rows} rows to BigQuery.")
+    return(f"Loaded {destination_table.num_rows} rows to BigQuery.")
   else:
   # cleanup
    logging.info('Created {} from {}'.format(
@@ -116,9 +110,9 @@ def load_to_bq(dest_table, local_json_schema, file_uri):
 def run_it(request):
   try:
     return_value = []
-    local_outfile_name = "hail_forecast.geojson"
-    output_table = "hurricane-detection-demo.geojson_ingest_demo.day1_hail_forecast"
-    dest_bucket = output_bucket(request)
+    local_outfile_name = "dayone_hail_forecast.geojson"
+    output_table = f"{project_id}.hail_demo.hail_events"
+    dest_bucket = output_bucket
     local_geojson = download_to_local(request, local_outfile_name, tmpdir)
     input_schema = convert_to_newline(local_geojson, converted_file)
     gcs_uri = upload_to_gcs(dest_bucket, converted_file, "to_load.json")

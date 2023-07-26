@@ -19,24 +19,19 @@ output "dataform_repo_url" {
   description = "The URL to launch the Dataform UI for the repo created"
 }
 
-output "output_bucket_id" {
-  value       = "${substr(google_storage_bucket.geojson_bucket.url, 3, -1)}"
-  description = "The URI of the GCS bucket where the newline-delimited GeoJSON file will be written. Copy and paste this into line 6 of load_geojson.sqlx"
-}
-
 output "remote_function_id" {
   value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_routine.remote_function.id}"
-  description = "Fully qualified ID of the remote function routine that executes the load of GeoJSON data into BigQuery. Copy and paste this into line 6 of load_geojson.sqlx"
+  description = "Fully qualified ID of the remote function routine that executes the load of GeoJSON data into BigQuery"
 }
 
 output "hail_input_object_table_id" {
   value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.gcs_objects_hail.table_id}"
-  description = "Fully qualified ID of the object table of GeoJSON files. Copy and paste this into line 8 of load_geojson.sqlx"
+  description = "Fully qualified ID of the object table of GeoJSON files"
 }
 
 output "customer_data_table_id" {
   value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.dest_table_customer.table_id}"
-  description = "Fully qualified ID of the table that contains the sample customer data. Copy and paste this into line 40 of convert_customer_geog.sqlx"
+  description = "Fully qualified ID of the table that contains the sample customer data"
 }
 
 output "hail_data_table_id" {
@@ -49,3 +44,8 @@ output "bigquery_editor_url" {
   description = "The URL to launch the BigQuery editor"
 }
 
+output "looker_studio_report_url" {
+
+  value       = "https://lookerstudio.google.com/c/reporting/create?c.reportId=92730323-a315-44ad-8fee-0c520f6397aa&ds.hail_impacts.datasourceName=hail_customers&ds.hail_impacts.projectId=${var.project_id}&ds.hail_impacts.type=TABLE&ds.hail_impacts.datasetId=${google_bigquery_dataset.dest_dataset.dataset_id}&ds.hail_impacts.tableId=customers_impacted"
+  description = "The URL to create a new Looker Studio report with a sample dashboard for the data"
+}

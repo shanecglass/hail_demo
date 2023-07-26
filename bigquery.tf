@@ -26,7 +26,7 @@ resource "google_bigquery_dataset" "dest_dataset" {
 resource "google_bigquery_table" "dest_table_customer" {
   project             = module.project-services.project_id
   dataset_id          = google_bigquery_dataset.dest_dataset.dataset_id
-  table_id            = "us_banks"
+  table_id            = var.customer_table_id
   deletion_protection = false
 
   schema = <<EOF
@@ -200,7 +200,7 @@ resource "google_bigquery_job" "load_samples_customer" {
 resource "google_bigquery_table" "dest_tables_hail" {
   project             = module.project-services.project_id
   dataset_id          = google_bigquery_dataset.dest_dataset.dataset_id
-  table_id            = "hail_events"
+  table_id            = var.hail_event_table_id
   deletion_protection = false
 
   time_partitioning {
@@ -296,7 +296,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
 resource "google_bigquery_table" "gcs_objects_hail" {
   project             = module.project-services.project_id
   dataset_id          = google_bigquery_dataset.dest_dataset.dataset_id
-  table_id            = "gcs_hail_inputs"
+  table_id            = var.gcs_hail_object_table_id
   deletion_protection = false
 
   external_data_configuration{
@@ -313,7 +313,7 @@ resource "google_bigquery_routine" "remote_function" {
   routine_id     = "geojson_loader"
   routine_type = "PROCEDURE"
   language = "SQL"
-  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING, output_bucket STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${output.function_uri}')"
+  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${output.function_uri}')"
 
   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }

@@ -1,10 +1,12 @@
 config {
   type: "table",
-  schema: "geojson_ingest_demo",
-  name: "counties_impacted",
+  schema: "hail_demo",
+  name: "customers_impacted",
   columns: {
     impact_probability: "Likelihood of hail impacting the customer",
     significant_severe: "Will the impact be significant/severe?",
+    county_name: "Name and LSAD of the county where the customer is located",
+    event_timestamp: "Timestamp of when the hail event occured",
     primary_key_id: "Concat of fdic_certificate_number and branch_name to uniquely identify each row",
     fdic_certificate_number: "A unique number assigned by the FDIC used to identify institutions and for the issuance of insurance certificates.",
     institution_name: "The legal name of the institution.",
@@ -36,44 +38,65 @@ config {
     last_updated: "	The day the institution information was updated.",
     service_type: "Define the various types of offices of FDIC-insured institutions. 11 - Full Service Brick and Mortar Office 12 - Full Service Retail Office 13 - Full Service Cyber Office 14 - Full Service Mobile Office 15 - Full Service Home/Phone Banking 16 - Full Service Seasonal Office 21 - Limited Service Administrative Office 22 - Limited Service Military Facility 23 - Limited Service Facility Office 24 - Limited Service Loan Production Office 25 - Limited Service Consumer Credit Office 26 - Limited Service Contractual Office 27 - Limited Service Messenger Office 28 - Limited Service Retail Office 29 - Limited Service Mobile Office 30 - Limited Service Trust Office",
     branch_fdic_uninum: "Unique Identification Number for a Branch Office as assigned by the FDIC",
-    bank_geom: "Geographic representation of the bank's physical location",
+    customer_geom: "Geographic representation of the bank's physical location",
+    customer_address: "Full address of the customer formatted for Looker Studio",
+    customer_location: "Lat/Lon of the customer formatted for Looker Studio",
+    state_fips_code: "FIPS code of the state where the customer is located"
   }
 }
 
+/* Determine which counties had any overlap with the storm area. This returns a list of counties and a few other key inputs from the hail event data.
+This allows us to use counties as a way to subset our customers so we don't have to query every customer for every event.
+The granularity on this search can vary by changing the geography. We use states for a broad subset of customers or census tracts for a more precise subset */
 with hold AS (
   SELECT
-    hail_polygons.* EXCEPT(geometry),
-    hail_polygons.hail_geom,
+    hail_polygons.LABEL AS LABEL,
+    hail_polygons.LABEL2 AS LABEL2,
+    PARSE_TIMESTAMP("%Y%m%d%H%M", hail_polygons.VALID, "-5:00") AS valid,
+    hail_polygons.geometry AS hail_geom,
     counties.lsad_name,
     counties.county_geom
   FROM
     `bigquery-public-data.geo_us_boundaries.counties` counties,
-    `<REPLACE THIS WITH hail_data_table_id OUTPUT>` AS hail_polygons
+    `hail_demo.hail_events` hail_polygons
   WHERE
-    ST_TOUCHES(counties.county_geom, hail_polygons.geometry)
-)
+    counties.state_fips_code IN ("17", "18", "21", "26", "39", "54")
+    AND ST_TOUCHES(counties.county_geom, hail_polygons.geometry)
+),
 
+/* Find a list of all customers whose location falls within the counties that have overlap with the storm area.
+This returns a list of all customers from within the counties that had overlap with the storm area */
 potential_customers_impacted AS (
   SELECT
     customers.*
   FROM
-    hold, ${ref("convert_customer_geog")} customers
+    ${ref("convert_customer_geog")} customers,
+    hold
   WHERE
-    ST_WITHIN(customers.geom, hold.county_geom)
+    customers.state IN ("IL", "IN", "KY", "MI", "OH", "WV" )
+    AND ST_WITHIN(customers.customer_geom, hold.county_geom)
 )
 
+/* This takes the customer subset identified in the previous statement, and determines if the customer location is within with the storm area.
+This is more computationally efficient than checking if every customer nationwide falls within the storm area, even though it is an extra step */
 SELECT
   CASE
     WHEN hold.LABEL = "0.05" THEN CAST(hold.LABEL as FLOAT64)
     WHEN hold.LABEL = "0.15" THEN CAST(hold.LABEL as FLOAT64)
-    WHEN hold.LABEL = "SIGN" THEN .01
+    WHEN hold.LABEL = "SIGN" THEN CAST(REGEXP_EXTRACT(hold.LABEL2, r"^([\d]{2}).*") AS FLOAT64)/100
   END AS impact_probability,
   CASE
     WHEN hold.LABEL = "SIGN" THEN TRUE
     ELSE FALSE
   END as significant_severe,
-  potential_customers_impacted.*
+  hold.lsad_name AS county_name,
+  hold.valid AS event_timestamp,
+  potential_customers_impacted.* EXCEPT (branch_address),
+  CONCAT(branch_address, ", ", branch_city, ", ", state, " ", zip_code) AS customer_address,
+  CONCAT(ST_Y(customer_geom), ", ", ST_X(customer_geom)) AS customer_location,
+  REGEXP_EXTRACT(potential_customers_impacted.county_fips_code, r"^([\d]{2}).*") AS state_fips_code
 FROM
-  potential_customers_impacted, hold
+  potential_customers_impacted,
+  hold
 WHERE
-  ST_WITHIN(potential_customers_impacted.geom, hold.hail_geom)
+  ST_WITHIN(potential_customers_impacted.customer_geom, hold.hail_geom)
