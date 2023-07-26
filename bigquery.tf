@@ -303,9 +303,9 @@ resource "google_bigquery_table" "gcs_objects_hail" {
 
   external_data_configuration{
     autodetect = true
-    object_metadata = "Simple"
     connection_id = google_bigquery_connection.function_connection.id
     source_uris = ["${google_storage_bucket.geojson_bucket.url}/input/*"]
+    object_metadata = "Simple"
   }
 
   depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]
@@ -317,7 +317,7 @@ resource "google_bigquery_routine" "remote_function" {
   routine_id     = "geojson_loader"
   routine_type = "PROCEDURE"
   language = "SQL"
-  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${locals.function_uri}')"
+  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
 
   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles, locals]
 }
