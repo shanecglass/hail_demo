@@ -1,7 +1,3 @@
-# Hail Demo
-Use this demo to see how BigQuery GIS and Remote Functions can be used to load GeoJSON files to BigQuery and determine which customers are potentially impacted by hail storms.
-
-
 # Customer impacts of hail - BigQuery GIS & Remote Functions demo
 
 This repo provides an example of how BigQuery GIS and Remote Functions can be used to load GeoJSON files to BigQuery and determine which customers are potentially impacted by hail storms. The following instructions should help you get started.
@@ -90,14 +86,9 @@ The Terraform output also lists the following additional information that you'll
 - A link to the Dataform repository that was created
 - The link to open the BigQuery editor for some sample queries
 
-## Deploy the app
-### 2. **Deploy the app**
-The [app](./app) folder contains the necessary resources and instructions to deploy the app to [Cloud Run](https://cloud.google.com/run) to get started
-
-
 ## Setup your analysis workspace
-### 3. **Configure Dataform**
+### 2. **Configure Dataform**
 Create and initialize your Dataform workspace. Then copy and paste the Dataform queries found in the [defintions](./definitions) folder, then start the workflow execution for all actions. These will load the GeoJSON into BigQuery, then find the customers who are within that area.
 
-### 4. **Analyze your results!**
-From here, you can get started analyzing the data! Head to the BigQuery console to see the table of the customers who were impacted by the hail event.
+### 3. **Analyze your results!**
+From here, you can get started analyzing the data! Head to the BigQuery console to see the table of the customers who were impacted by the hail event. You can use
