@@ -183,7 +183,7 @@ resource "google_bigquery_job" "load_samples_customer" {
   }
 
   load {
-    source_uris = ["${var.setup_bucket}/${var.bank_sample_data}"]
+    source_uris = ["${var.setup_bucket}/${var.customer_sample_data}"]
 
     destination_table {
       project    = module.project-services.project_id
@@ -319,7 +319,7 @@ resource "google_bigquery_routine" "remote_function" {
   language = "SQL"
   definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
 
-  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles, locals]
+  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }
 
 # Create Dataform repository
