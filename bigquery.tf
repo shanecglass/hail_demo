@@ -21,7 +21,7 @@ resource "google_bigquery_dataset" "dest_dataset" {
   project             = module.project-services.project_id
   dataset_id          = var.bq_dataset_hail
   location            = var.region
-  depends_on          = [ time_sleep.wait_after_apis_activate]
+  depends_on          = [time_sleep.wait_after_apis_activate]
 }
 
 #Create table for sample customer data
@@ -274,7 +274,7 @@ resource "google_bigquery_connection" "function_connection" {
 
 #Pull service account email that was created for BigQuery Connection
 data "google_service_account" "bq_connection_sa" {
-  account_id = google_bigquery_connection.function_connection.id
+  account_id = google_bigquery_connection.function_connection.cloud_resource.service_account_id
   depends_on = [google_bigquery_connection.function_connection]
 }
 
@@ -326,6 +326,7 @@ resource "google_bigquery_routine" "remote_function" {
 resource "google_dataform_repository" "cleaning_repo" {
   provider            = google-beta
   name                = "Hail_Demo"
+  region              = var.region
 
   workspace_compilation_overrides {
     default_database  = module.project-services.project_id
