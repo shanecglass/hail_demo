@@ -13,7 +13,7 @@ cd hail_demo
 ```
 
 ### 1. Setup your infrastructure
-This app uses Cloud Run, Cloud Build, BigQuery, and PubSub. Run the following to execute the Terraform script to setup everything.
+This app uses Cloud Functions, BigQuery, Dataform, and more. Run the following to execute the Terraform script to setup everything.
 
 #### 1. Intialize Terraform
 First, initialize Terraform by running

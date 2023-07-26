@@ -17,7 +17,7 @@
 #Create dataset for sample hail events and sample customer data
 resource "google_bigquery_dataset" "dest_dataset" {
   project             = module.project-services.project_id
-  dataset_id          = var.bq_dataset
+  dataset_id          = var.bq_dataset_hail
   location            = var.region
   depends_on          = [ time_sleep.wait_after_apis_activate]
 }

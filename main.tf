@@ -69,7 +69,7 @@ resource "google_project_iam_member" "function_manage_roles" {
   )
   project = module.project-services.project_id
   role    = each.key
-  member  = "serviceAccount:${data.google_service_account.cloud_function_manage_sa.email}"
+  member  = "serviceAccount:${google_service_account.cloud_function_manage_sa.email}"
 
   depends_on = [google_service_account.cloud_function_manage_sa]
 }
