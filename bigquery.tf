@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-locals {
-  function_uri = "${google_cloudfunctions2_function.geojson_load.service_config[0].uri}"
-}
+
 
 #Create dataset for sample hail events and sample customer data
 resource "google_bigquery_dataset" "dest_dataset" {
@@ -321,7 +319,7 @@ resource "google_bigquery_routine" "remote_function" {
   language = "SQL"
   definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${locals.function_uri}')"
 
-  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
+  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles, locals]
 }
 
 # Create Dataform repository

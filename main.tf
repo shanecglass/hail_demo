@@ -74,6 +74,11 @@ resource "google_project_iam_member" "function_manage_roles" {
   depends_on = [google_service_account.cloud_function_manage_sa]
 }
 
+locals {
+  function_uri = "${google_cloudfunctions2_function.geojson_load.service_config[0].uri}"
+  depends_on = [google_cloudfunctions2_function.geojson_load]
+}
+
 resource "time_sleep" "wait_after_all_resources" {
   create_duration = "120s"
   depends_on = [
