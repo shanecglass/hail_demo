@@ -186,7 +186,7 @@ resource "google_bigquery_job" "load_samples_customer" {
     source_uris = ["${var.setup_bucket}/${var.customer_sample_data}"]
 
     destination_table {
-      project    = module.project-services.project_id
+      project_id    = module.project-services.project_id
       dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
       table_id   = google_bigquery_table.dest_table_customer.table_id
     }
