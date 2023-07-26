@@ -199,7 +199,7 @@ resource "google_bigquery_job" "load_samples_customer" {
 }
 
 #Create table for sample hail event data
-resource "google_bigquery_table" "dest_tables_hail" {
+resource "google_bigquery_table" "dest_table_hail" {
   project             = module.project-services.project_id
   dataset_id          = google_bigquery_dataset.dest_dataset.dataset_id
   table_id            = var.hail_event_table_id
