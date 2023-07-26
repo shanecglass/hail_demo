@@ -27,7 +27,7 @@ resource "google_cloudfunctions2_function" "geojson_load" {
     service_account_email = data.google_service_account.cloud_function_manage_sa.email
   }
 
-  depends_on = [google_project_iam_member.function_manage_roles]
+  depends_on = [google_storage_bucket_object.function_upload, google_project_iam_member.function_manage_roles]
 
 }
 

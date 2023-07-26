@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "4.51.0"
-    }
-  }
-}
-
 module "project-services" {
-  source = "./module-project-services"
+  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+  version                     = "14.2.1"
+  disable_services_on_destroy = false
+
+  project_id  = var.project_id
+  enable_apis = var.enable_apis
+
+  activate_apis = [
+    "bigquery.googleapis.com",
+    "bigqueryconnection.googleapis.com",
+    "cloudapis.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "cloudrun.googleapis.com",
+    "config.googleapis.com",
+    "dataform.googleapis.com",
+    "iam.googleapis.com",
+    "logging.googleapis.com",
+    "storage.googleapis.com",
+    "storage-api.googleapis.com",
+  ]
 }
 
 resource "time_sleep" "wait_after_apis_activate" {
   depends_on      = [module.project-services]
-  create_duration = "60s"
+  create_duration = "120s"
 }
 
 resource "google_project_service_identity" "cloud_functions" {
@@ -52,7 +63,8 @@ resource "google_project_iam_member" "function_manage_roles" {
   for_each = toset([
     "roles/cloudfunctions.admin",         // Service account role to manage access to the remote function
     "roles/storage.objectAdmin",          // Read/write GCS files
-    "roles/storage.legacyBucketWriter"    // Read/write GCS files
+    "roles/storage.legacyBucketWriter",    // Read/write GCS files
+    "roles/iam.serviceAccountUser"
     ]
   )
   project = module.project-services.project_id

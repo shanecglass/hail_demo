@@ -19,7 +19,7 @@ resource "google_bigquery_dataset" "dest_dataset" {
   project             = module.project-services.project_id
   dataset_id          = var.bq_dataset
   location            = var.region
-  depends_on = [ module.project-services]
+  depends_on          = [ time_sleep.wait_after_apis_activate]
 }
 
 #Create table for sample customer data
@@ -170,19 +170,18 @@ resource "google_bigquery_table" "dest_table_customer" {
       "type": "STRING"
     }]
   EOF
+  depends_on = [ google_bigquery_dataset.dest_dataset ]
 }
 
 #Load sample customer data to BigQuery
 resource "google_bigquery_job" "load_samples_customer" {
-  job_id = "job_load_samples"
+  job_id = "load_sample_customers"
   labels = {
     "my_job" ="load"
   }
 
   load {
-    source_uris = [
-      "${var.setup_bucket}/${var.bank_sample_data}"
-    ]
+    source_uris = ["${var.setup_bucket}/${var.bank_sample_data}"]
 
     destination_table {
       project    = module.project-services.project_id
@@ -193,7 +192,8 @@ resource "google_bigquery_job" "load_samples_customer" {
     source_format         = "PARQUET"
     autodetect            = false
   }
-  depends_on = [google_bigquery_dataset.dest_tables]
+  depends_on = [google_bigquery_dataset.dest_dataset, google_bigquery_table.dest_table_customer]
+
 }
 
 #Create table for sample hail event data
@@ -266,6 +266,8 @@ resource "google_bigquery_connection" "function_connection" {
     friendly_name = "GeoJSON Loader"
     description   = "Connecting to the remote function that converts GeoJSON files to Newline Delimited JSON and loads to BQ"
     cloud_resource {}
+    depends_on    = [ time_sleep.wait_after_apis_activate ]
+
 }
 
 #Pull service account email that was created for BigQuery Connection
@@ -279,7 +281,8 @@ resource "google_project_iam_member" "functions_invoke_roles" {
   for_each = toset([
     "roles/run.invoker",                    // Service account role to invoke the remote function
     "roles/cloudfunctions.invoker",         // Service account role to invoke the remote function
-    "roles/storage.objectViewer"            // View GCS objects to create object tables
+    "roles/storage.objectViewer",            // View GCS objects to create object tables
+    "roles/iam.serviceAccountUser"
     ]
   )
   project = module.project-services.project_id
@@ -301,7 +304,7 @@ resource "google_bigquery_table" "gcs_objects_hail" {
     source_uris = "${google_storage_bucket.geojson_bucket.url}/input/*"
   }
 
-  depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload]
+  depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]
 }
 
 # Create remote function that takes input from GCS object table and sends that to the Cloud Function
@@ -312,18 +315,18 @@ resource "google_bigquery_routine" "remote_function" {
   language = "SQL"
   definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING, output_bucket STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${output.function_uri}')"
 
-  depends_on = [google_cloudfunctions2_function.geojson_load]
+  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }
 
 # Create Dataform repository
 resource "google_dataform_repository" "cleaning_repo" {
-  provider = google-beta
-  name = "Hail_Demo"
+  provider            = google-beta
+  name                = "Hail_Demo"
 
   workspace_compilation_overrides {
-    default_database = module.project-services.project_id
+    default_database  = module.project-services.project_id
   }
 
-  depends_on = [module.project-services]
+  depends_on          = [time_sleep.wait_after_apis_activate ]
 }
 
