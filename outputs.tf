@@ -35,7 +35,7 @@ output "customer_data_table_id" {
 }
 
 output "hail_data_table_id" {
-  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.dest_tables_hail.table_id}"
+  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.dest_table_hail.table_id}"
   description = "Fully qualified ID of the table that contains the sample hail event data. Copy and paste this into line 51 of customers_impacted.sqlx"
 }
 
