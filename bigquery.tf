@@ -301,7 +301,7 @@ resource "google_bigquery_table" "gcs_objects_hail" {
 
   external_data_configuration{
     connection_id = google_bigquery_connection.function_connection.id
-    source_uris = "${google_storage_bucket.geojson_bucket.url}/input/*"
+    source_uris = ["${google_storage_bucket.geojson_bucket.url}/input/*"]
   }
 
   depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]

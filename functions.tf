@@ -25,7 +25,7 @@ resource "google_cloudfunctions2_function" "geojson_load" {
     available_cpu = "4"
     ingress_settings = "ALLOW_ALL"
     all_traffic_on_latest_revision = true
-    service_account_email = data.google_service_account.cloud_function_manage_sa.email
+    service_account_email = google_service_account.cloud_function_manage_sa.email
   }
 
   depends_on = [google_storage_bucket_object.function_upload, google_project_iam_member.function_manage_roles]
