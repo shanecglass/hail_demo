@@ -274,7 +274,7 @@ resource "google_bigquery_connection" "function_connection" {
 
 #Pull service account email that was created for BigQuery Connection
 data "google_service_account" "bq_connection_sa" {
-  account_id = google_bigquery_connection.function_connection.cloud_resource.service_account_id
+  account_id = google_bigquery_connection.function_connection.cloud_resource[0].service_account_id
   depends_on = [google_bigquery_connection.function_connection]
 }
 
