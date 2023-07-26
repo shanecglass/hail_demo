@@ -28,11 +28,11 @@ module "project-services" {
     "cloudapis.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
-    "cloudrun.googleapis.com",
     "config.googleapis.com",
     "dataform.googleapis.com",
     "iam.googleapis.com",
     "logging.googleapis.com",
+    "run.googleapis.com",
     "storage.googleapis.com",
     "storage-api.googleapis.com",
   ]
