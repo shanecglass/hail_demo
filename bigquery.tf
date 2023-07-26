@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  function_uri = "${google_cloudfunctions2_function.geojson_load.service_config[0].uri}"
+}
+
 #Create dataset for sample hail events and sample customer data
 resource "google_bigquery_dataset" "dest_dataset" {
   project             = module.project-services.project_id
@@ -185,7 +189,7 @@ resource "google_bigquery_job" "load_samples_customer" {
 
     destination_table {
       project    = module.project-services.project_id
-      dataset_id = google_bigquery_table.dest_dataset.dataset_id
+      dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
       table_id   = google_bigquery_table.dest_table_customer.table_id
     }
     write_disposition     = "WRITE_EMPTY"
@@ -300,6 +304,8 @@ resource "google_bigquery_table" "gcs_objects_hail" {
   deletion_protection = false
 
   external_data_configuration{
+    autodetect = true
+    object_metadata = "Simple"
     connection_id = google_bigquery_connection.function_connection.id
     source_uris = ["${google_storage_bucket.geojson_bucket.url}/input/*"]
   }
@@ -313,7 +319,7 @@ resource "google_bigquery_routine" "remote_function" {
   routine_id     = "geojson_loader"
   routine_type = "PROCEDURE"
   language = "SQL"
-  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${output.function_uri}')"
+  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${locals.function_uri}')"
 
   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }

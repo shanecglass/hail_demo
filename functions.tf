@@ -31,7 +31,3 @@ resource "google_cloudfunctions2_function" "geojson_load" {
   depends_on = [google_storage_bucket_object.function_upload, google_project_iam_member.function_manage_roles]
 
 }
-
-output "function_uri" {
-  value = google_cloudfunctions2_function.geojson_load.service_config[0].uri
-}
