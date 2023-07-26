@@ -41,7 +41,7 @@
       version = ">= 3.2.1"
     }
   }
-  required_version = ">= 0.13"
+  required_version = ">= 1.5.3"
 
   provider_meta "google" {
     module_name = "blueprints/terraform/terraform-google-analytics-lakehouse/v0.3.0"
