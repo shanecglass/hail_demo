@@ -147,12 +147,12 @@ resource "google_bigquery_table" "dest_table_customer" {
       "type": "STRING"
     },
     {
-      "description": "\tThis is the FDIC UNINUM of the institution that owns the branch. A UNINUM is a unique sequentially number added to the FDIC database for both banks and branches. There is no pattern imbedded within the number. The FI_UNINUM is updated with every merger or purchase of branches to reflect the most current owner.",
+      "description": "This is the FDIC UNINUM of the institution that owns the branch. A UNINUM is a unique sequentially number added to the FDIC database for both banks and branches. There is no pattern imbedded within the number. The FI_UNINUM is updated with every merger or purchase of branches to reflect the most current owner.",
       "name": "fdic_uninum",
       "type": "STRING"
     },
     {
-      "description": "\tThe day the institution information was updated.",
+      "description": "The day the institution information was updated.",
       "name": "last_updated",
       "type": "STRING"
     },
@@ -289,7 +289,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
   )
   project = module.project-services.project_id
   role    = each.key
-  member  = "serviceAccount:${data.google_service_account.bq_connection_sa.email}"
+  member  = "serviceAccount:${data.google_service_account.bq_connection_sa.name}"
 
   depends_on = [data.google_service_account.bq_connection_sa]
 }
