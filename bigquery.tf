@@ -317,7 +317,7 @@ resource "google_dataform_repository" "cleaning_repo" {
 
 resource "time_sleep" "wait_after_dataform_repo" {
   depends_on      = [google_dataform_repository.cleaning_repo]
-  create_duration = "120s"
+  create_duration = "60s"
 }
 
 data "google_project" "project" {
