@@ -13,7 +13,10 @@ resource "google_cloudfunctions2_function" "geojson_load" {
         object = google_storage_bucket_object.function_upload.name
       }
     }
-    environment_variables = {OUTPUT_BUCKET="${substr(google_storage_bucket.geojson_bucket.url, 3, -1)}", PROJ="${module.project-services.project_id}", REGION="${var.region}"}
+    environment_variables = {
+      "OUTPUT_BUCKET":"${substr(google_storage_bucket.geojson_bucket.url, 3, -1)}",
+      "PROJ":"${module.project-services.project_id}",
+      "REGION":"${var.region}"}
   }
 
   service_config {
