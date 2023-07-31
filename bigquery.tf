@@ -308,7 +308,7 @@ resource "google_bigquery_routine" "remote_function" {
   routine_id     = "geojson_loader"
   routine_type = "SCALAR_FUNCTION"
   language = "SQL"
-  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
+  definition_body = "CREATE OR REPLACE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
 
   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }
@@ -332,7 +332,7 @@ data "google_project" "project" {
 
 resource "google_project_iam_member" "dataform_roles" {
   for_each = toset([
-    "roles/bigquery.Admin",                 // Allow Dataform service accoun to create jobs, execute jobs, create tables, write to tables
+    "roles/bigquery.jobUser",                 // Allow Dataform service accoun to create jobs, execute jobs, create tables, write to tables
     "roles/iam.serviceAccountUser"
     ]
   )
