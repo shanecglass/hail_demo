@@ -178,6 +178,7 @@ resource "google_bigquery_table" "dest_table_customer" {
 #Load sample customer data to BigQuery
 resource "google_bigquery_job" "load_samples_customer" {
   job_id = "load_sample_customers"
+  location   = var.region
   labels = {
     "my_job" ="load"
   }
