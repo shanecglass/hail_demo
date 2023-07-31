@@ -272,12 +272,6 @@ resource "google_bigquery_connection" "function_connection" {
 
 }
 
-#Pull service account email that was created for BigQuery Connection
-data "google_service_account" "bq_connection_sa" {
-  account_id = google_bigquery_connection.function_connection.cloud_resource[0].service_account_id
-  depends_on = [google_bigquery_connection.function_connection]
-}
-
 #Grant connection service account necessary permissions
 resource "google_project_iam_member" "functions_invoke_roles" {
   for_each = toset([
@@ -289,7 +283,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
   )
   project = module.project-services.project_id
   role    = each.key
-  member  = "serviceAccount:${data.google_service_account.bq_connection_sa.email}"
+  member  = format("serviceAccount:%s", google_bigquery_connection.function_connection.cloud_resource[0].service_account_id)
 
   depends_on = [data.google_service_account.bq_connection_sa]
 }
