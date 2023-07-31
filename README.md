@@ -12,6 +12,8 @@ gcloud config set project <PROJECT ID>
 git clone https://github.com/shanecglass/hail_demo.git
 cd hail_demo
 ```
+#### 2. Enable the Cloud Resource Manager API
+Check to make sure the [Cloud Resource Manager API](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com) is enabled
 
 ### 1. Setup your infrastructure
 This app uses Cloud Functions, BigQuery, Dataform, and more. Run the following to execute the Terraform script to setup everything.

@@ -289,7 +289,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
   )
   project = module.project-services.project_id
   role    = each.key
-  member  = "serviceAccount:${data.google_service_account.bq_connection_sa.name}"
+  member  = "serviceAccount:${data.google_service_account.bq_connection_sa.email}"
 
   depends_on = [data.google_service_account.bq_connection_sa]
 }
