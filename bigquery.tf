@@ -330,7 +330,7 @@ data "google_project" "project" {
   project_id = module.project-services.project_id
 }
 
-resource "google_project_iam_member" "functions_invoke_roles" {
+resource "google_project_iam_member" "dataform_roles" {
   for_each = toset([
     "roles/bigquery.Admin",                 // Allow Dataform service accoun to create jobs, execute jobs, create tables, write to tables
     "roles/iam.serviceAccountUser"
