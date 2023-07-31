@@ -340,5 +340,5 @@ resource "google_project_iam_member" "dataform_roles" {
   role    = each.key
   member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
 
-  depends_on = [google_dataform_repository.cleaning_repo, data.data.google_project.project]
+  depends_on = [google_dataform_repository.cleaning_repo, data.google_project.project]
 }
