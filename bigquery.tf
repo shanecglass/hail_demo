@@ -329,6 +329,7 @@ resource "google_project_iam_member" "dataform_roles" {
   for_each = toset([
     "roles/bigquery.jobUser",                 // Allow Dataform service account to create & execute jobs
     "roles/bigquery.dataViewer",              // Allow Dataform service account to query data
+    "roles/bigquery.connectionUser",          // Allow Dataform to use GCP connection
     "roles/iam.serviceAccountUser"
     ]
   )
