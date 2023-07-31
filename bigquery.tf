@@ -302,17 +302,6 @@ resource "google_bigquery_table" "gcs_objects_hail" {
   depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]
 }
 
-# Create remote function that takes input from GCS object table and sends that to the Cloud Function
-resource "google_bigquery_routine" "remote_function" {
-  dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
-  routine_id     = "geojson_loader"
-  routine_type = "SCALAR_FUNCTION"
-  language = "SQL"
-  definition_body = "CREATE OR REPLACE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
-
-  depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
-}
-
 # Create Dataform repository
 resource "google_dataform_repository" "cleaning_repo" {
   provider            = google-beta
@@ -342,3 +331,27 @@ resource "google_project_iam_member" "dataform_roles" {
 
   depends_on = [google_dataform_repository.cleaning_repo, data.google_project.project]
 }
+
+
+resource "google_bigquery_job" "create_remote_function" {
+  job_id     = "create_remote_function"
+  location   = var.region
+  labels = {
+    "example-label" ="example-value"
+  }
+
+  query {
+    query = "CREATE OR REPLACE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.url}')"
+  }
+}
+
+# # Create remote function that takes input from GCS object table and sends that to the Cloud Function
+# resource "google_bigquery_routine" "remote_function" {
+#   dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
+#   routine_id     = "geojson_loader"
+#   routine_type = "SCALAR_FUNCTION"
+#   language = "SQL"
+#   definition_body =
+
+#   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
+# }
