@@ -285,7 +285,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
   role    = each.key
   member  = format("serviceAccount:%s", google_bigquery_connection.function_connection.cloud_resource[0].service_account_id)
 
-  depends_on = [data.google_service_account.bq_connection_sa]
+  depends_on = [google_bigquery_connection.function_connection]
 }
 
 #Create GCS object table for sample hail event data. This is what input table for the remote function
