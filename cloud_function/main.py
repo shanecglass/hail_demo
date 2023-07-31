@@ -13,9 +13,9 @@ tmpdir = tempfile.mkdtemp()
 converted_file = os.path.join(tmpdir, 'to_load.json')
 # intermediate_file = os.path.join(tmpdir,'intermediate.geojson')
 #Change this line before uploading
-project_id = os.environ["PROJECT_ID"]
-output_bucket = os.environ["OUTPUT_BUCKET"]
-region = os.environ["REGION"]
+output_bucket = os.environ.get["OUTPUT_BUCKET"]
+project_id = os.environ.get["PROJECT_ID"]
+region = os.environ.get["REGION"]
 
 @functions_framework.http
 def list_gcs_files(request):
