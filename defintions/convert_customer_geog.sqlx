@@ -1,5 +1,6 @@
 config {
   type: "table",
+  dependencies: ["load_geojson"],
   columns: {
     fdic_certificate_number: "A unique number assigned by the FDIC used to identify institutions and for the issuance of insurance certificates.",
     institution_name: "The legal name of the institution.",

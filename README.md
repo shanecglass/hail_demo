@@ -91,7 +91,23 @@ The Terraform output also lists the following additional information that you'll
 
 ## Setup your analysis workspace
 ### 2. **Configure Dataform**
-Create and initialize your Dataform workspace. Then copy and paste the Dataform queries found in the [defintions](./definitions) folder, then start the workflow execution for all actions. These will load the GeoJSON into BigQuery, then find the customers who are within that area.
+#### 1. Create and initialize your Dataform workspace.
+Click the Dataform link in the Terraform output to create a workspace, then click "initialize workspace" to get started.
+
+#### 2. Update dataform.json
+Update your Dataform Workspace's `dataform.json` file as described below:
+```
+{
+  "defaultSchema": "hail_demo",
+  "assertionSchema": "dataform_assertions",
+  "warehouse": "bigquery",
+  "defaultDatabase": "<YOUR PROJECT ID>",
+  "defaultLocation": "us-central1"
+}
+```
+
+#### 3. Add the definitions files to Dataform
+Add the Dataform queries found in the [definitions](./definitions) to the definitions folder to your Workspace. Click the 3-dot menu next to your Dataform Workspace's definitions folder in the UI to create a new file. Start the workflow execution for all actions. These will load the polygons defined in the GeoJSON file into BigQuery, then find the customers who are within that area. Be sure the file names in your Dataform Workspace's definitions folder match those of the files provided and include the .sqlx extension.
 
 ### 3. **Analyze your results!**
 From here, you can get started analyzing the data! Head to the BigQuery console to see the table of the customers who were impacted by the hail event. You can use

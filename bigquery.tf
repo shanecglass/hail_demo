@@ -277,6 +277,7 @@ resource "google_project_iam_member" "functions_invoke_roles" {
     "roles/iam.serviceAccountUser"
     ]
   )
+
   project = module.project-services.project_id
   role    = each.key
   member  = format("serviceAccount:%s", google_bigquery_connection.function_connection.cloud_resource[0].service_account_id)
@@ -325,3 +326,19 @@ resource "google_dataform_repository" "cleaning_repo" {
   depends_on          = [time_sleep.wait_after_apis_activate ]
 }
 
+data "google_project" "project" {
+  project_id = module.project-services.project_id
+}
+
+resource "google_project_iam_member" "functions_invoke_roles" {
+  for_each = toset([
+    "roles/bigquery.Admin",                 // Allow Dataform service accoun to create jobs, execute jobs, create tables, write to tables
+    "roles/iam.serviceAccountUser"
+    ]
+  )
+  project = module.project-services.project_id
+  role    = each.key
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
+
+  depends_on = [google_dataform_repository.cleaning_repo, data.data.google_project.project]
+}
