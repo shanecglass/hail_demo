@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-output "create_remote_function_cli" {
-  value = <<EOT
-
-
-  bq query --project_id ${var.project_id} \
-  --use_legacy_sql=false \
-  """
-  CREATE OR REPLACE FUNCTION \`${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}\`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION \`${module.project-services.project_id}.${var.region}.${var.bq_connection_id}\` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.url}')
-  """
-
-
-  EOT
-  description = "Copy and paste this into the CLI to create the remote function"
-}
-
 output "dataform_repo_url" {
   value       = "https://console.cloud.google.com/bigquery/dataform/locations/us-central1/repositories/${google_dataform_repository.cleaning_repo.name}/details/workspaces?project=${var.project_id}"
   description = "The URL to launch the Dataform UI for the repo created"

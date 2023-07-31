@@ -332,13 +332,16 @@ resource "google_project_iam_member" "dataform_roles" {
   depends_on = [google_dataform_repository.cleaning_repo, data.google_project.project]
 }
 
-# # Create remote function that takes input from GCS object table and sends that to the Cloud Function
-# resource "google_bigquery_routine" "remote_function" {
-#   dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
-#   routine_id     = "geojson_loader"
-#   routine_type = "SCALAR_FUNCTION"
-#   language = "SQL"
-#   definition_body =
-
-#   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
-# }
+resource "terraform_data" "bld_and_deploy"{
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = <<-EOT
+      bq query --project_id ${var.project_id} \
+      --use_legacy_sql=false \
+      """
+      CREATE OR REPLACE FUNCTION \`${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}\`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION \`${module.project-services.project_id}.${var.region}.${var.bq_connection_id}\` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.url}')
+      """
+    EOT
+  }
+  depends_on = [time_sleep.wait_after_apis_activate]
+}
