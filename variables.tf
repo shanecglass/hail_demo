@@ -56,6 +56,12 @@ variable "setup_bucket" {
   default = "gs://hail_demo_sample_data"
 }
 
+variable "bq_connection_id" {
+  type = string
+  description = "Connection ID for BigQuery"
+  default = "geojson-ingest"
+}
+
 variable "gcs_hail_object_table_id" {
   type = string
   description = "BigQuery table ID for the GCS object table that holds hail inputs"

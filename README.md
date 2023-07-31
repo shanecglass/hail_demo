@@ -107,7 +107,7 @@ Update your Dataform Workspace's `dataform.json` file as described below:
 ```
 
 #### 3. Add the definitions files to Dataform
-Add the Dataform queries found in the [definitions](./definitions) to the definitions folder to your Workspace. Click the 3-dot menu next to your Dataform Workspace's definitions folder in the UI to create a new file. Start the workflow execution for all actions. These will load the polygons defined in the GeoJSON file into BigQuery, then find the customers who are within that area. Be sure the file names in your Dataform Workspace's definitions folder match those of the files provided and include the .sqlx extension.
+Remove the sample view files and add the Dataform queries found in the [definitions](./definitions) to the definitions folder to your Workspace. Click the 3-dot menu next to your Dataform Workspace's definitions folder in the UI to create a new file. Start the workflow execution for all actions. These will load the polygons defined in the GeoJSON file into BigQuery, then find the customers who are within that area. Be sure the file names in your Dataform Workspace's definitions folder match those of the files provided and include the .sqlx extension.
 
 ### 3. **Analyze your results!**
 From here, you can get started analyzing the data! Head to the BigQuery console to see the table of the customers who were impacted by the hail event. You can use

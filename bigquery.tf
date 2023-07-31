@@ -259,7 +259,7 @@ EOF
 
 #Create BigQuery connection for Cloud Functions and GCS
 resource "google_bigquery_connection" "function_connection" {
-    connection_id = "geojson-ingest"
+    connection_id = var.bq_connection_id
     location      = "us-central1"
     friendly_name = "GeoJSON Loader"
     description   = "Connecting to the remote function that converts GeoJSON files to Newline Delimited JSON and loads to BQ"
@@ -306,9 +306,9 @@ resource "google_bigquery_table" "gcs_objects_hail" {
 resource "google_bigquery_routine" "remote_function" {
   dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
   routine_id     = "geojson_loader"
-  routine_type = "PROCEDURE"
+  routine_type = "SCALAR_FUNCTION"
   language = "SQL"
-  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${google_bigquery_connection.function_connection.name}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
+  definition_body = "CREATE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.service_config[0].uri}')"
 
   depends_on = [google_cloudfunctions2_function.geojson_load, google_project_iam_member.functions_invoke_roles]
 }
