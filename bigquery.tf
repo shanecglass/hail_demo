@@ -322,7 +322,7 @@ resource "time_sleep" "wait_after_dataform_repo" {
 
 data "google_project" "project" {
   project_id = module.project-services.project_id
-  depends_on = [ wait_after_dataform_repo ]
+  depends_on = [ time_sleep.wait_after_dataform_repo ]
 }
 
 resource "google_project_iam_member" "dataform_roles" {
