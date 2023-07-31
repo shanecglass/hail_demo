@@ -13,7 +13,7 @@ tmpdir = tempfile.mkdtemp()
 converted_file = os.path.join(tmpdir, 'to_load.json')
 # intermediate_file = os.path.join(tmpdir,'intermediate.geojson')
 #Change this line before uploading
-project_id = os.environ["PROJ"]
+project_id = os.environ["PROJECT_ID"]
 output_bucket = os.environ["OUTPUT_BUCKET"]
 region = os.environ["REGION"]
 
