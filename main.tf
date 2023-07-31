@@ -74,7 +74,7 @@ resource "google_project_iam_member" "function_manage_roles" {
 }
 
 resource "time_sleep" "wait_after_all_resources" {
-  create_duration = "120s"
+  create_duration = "60s"
   depends_on = [
     module.project-services,
     google_project_iam_member.function_manage_roles,
