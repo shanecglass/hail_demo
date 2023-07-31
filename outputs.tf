@@ -15,7 +15,12 @@
  */
 
 output "create_remote_function_cli" {
-  value = "bq query --use_legacy_sql=false \"CREATE OR REPLACE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.url}')\""
+  value = <<EOT
+  "bq query -- project_id ${var.project_id} \ --use_legacy_sql=false \
+  """
+  CREATE OR REPLACE FUNCTION `${module.project-services.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}`.geojson_loader(gcs_uri STRING) RETURNS STRING REMOTE WITH CONNECTION `${module.project-services.project_id}.${var.region}.${var.bq_connection_id}` OPTIONS (endpoint = '${google_cloudfunctions2_function.geojson_load.url}')
+  """
+  EOT
   description = "Copy and paste this into the CLI to create the remote function"
 }
 
