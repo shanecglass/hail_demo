@@ -86,7 +86,7 @@ resource "time_sleep" "wait_after_all_resources" {
     google_bigquery_connection.function_connection,
     google_project_iam_member.functions_invoke_roles,
     google_bigquery_table.gcs_objects_hail,
-    google_bigquery_routine.remote_function,
+    google_bigquery_job.create_remote_function,
     google_dataform_repository.cleaning_repo,
     google_project_iam_member.dataform_roles
   ]

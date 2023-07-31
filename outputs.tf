@@ -19,26 +19,6 @@ output "dataform_repo_url" {
   description = "The URL to launch the Dataform UI for the repo created"
 }
 
-output "remote_function_id" {
-  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_routine.remote_function.id}"
-  description = "Fully qualified ID of the remote function routine that executes the load of GeoJSON data into BigQuery"
-}
-
-output "hail_input_object_table_id" {
-  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.gcs_objects_hail.table_id}"
-  description = "Fully qualified ID of the object table of GeoJSON files"
-}
-
-output "customer_data_table_id" {
-  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.dest_table_customer.table_id}"
-  description = "Fully qualified ID of the table that contains the sample customer data"
-}
-
-output "hail_data_table_id" {
-  value = "${var.project_id}.${google_bigquery_dataset.dest_dataset.dataset_id}.${google_bigquery_table.dest_table_hail.table_id}"
-  description = "Fully qualified ID of the table that contains the sample hail event data. Copy and paste this into line 51 of customers_impacted.sqlx"
-}
-
 output "bigquery_editor_url" {
   value       = "https://console.cloud.google.com/bigquery?project=${var.project_id}"
   description = "The URL to launch the BigQuery editor"
