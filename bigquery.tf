@@ -327,7 +327,8 @@ data "google_project" "project" {
 
 resource "google_project_iam_member" "dataform_roles" {
   for_each = toset([
-    "roles/bigquery.jobUser",                 // Allow Dataform service accoun to create jobs, execute jobs, create tables, write to tables
+    "roles/bigquery.jobUser",                 // Allow Dataform service account to create & execute jobs
+    "roles/bigquery.dataViewer",              // Allow Dataform service account to query data
     "roles/iam.serviceAccountUser"
     ]
   )
