@@ -11,24 +11,24 @@ import tempfile
 
 tmpdir = tempfile.mkdtemp()
 converted_file = os.path.join(tmpdir, 'to_load.json')
-# intermediate_file = os.path.join(tmpdir,'intermediate.geojson')
-#Change this line before uploading
-output_bucket = os.environ.get("OUTPUT_BUCKET")
+dest_bucket = os.environ.get("OUTPUT_BUCKET")
 project_id = os.environ.get("PROJECT_ID")
 region = os.environ.get("REGION")
 
 @functions_framework.http
 def list_gcs_files(request):
+  print(request)
   try:
     request_json = request.get_json()
     calls = request_json['calls']
     for call in calls:
       gsutil_link = str(call[0])
+      print(gsutil_link)
     return gsutil_link
   except Exception as e:
     return json.dumps({"errorMessage": str(e)}), 400
 
-def copy_fromgcs(blob_name, basename, destdir):
+def copy_fromgcs(blob_name, destdir, basename):
   client = gcs.Client()
   blob = Blob.from_string(blob_name, client=client)
   logging.info('Downloading {}'.format(blob))
@@ -62,7 +62,7 @@ def convert_to_newline(local_file, converted_file):
 def download_to_local(request, outfilename, tmpdir):
   list_local_files = []
   local_file = copy_fromgcs(
-    list_gcs_files(request), outfilename, tmpdir)
+    list_gcs_files(request), tmpdir, outfilename)
   # logging.info('Creating image from {} near {},{}'.format(
   #   outfilename))
   list_local_files.append(local_file)
@@ -77,8 +77,11 @@ def download_to_local(request, outfilename, tmpdir):
 
 def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
   client = gcs.Client()
-  bucket = client.bucket(bucket_name)
+  print(client)
+  bucket = client.Bucket(bucket_name)
+  print(bucket)
   blob = bucket.blob(f"output/{destination_blob_name}")
+  print(blob)
   blob.upload_from_filename(source_file_name)
   print(f"gs://{bucket_name}/output/{destination_blob_name}")
   return(f"gs://{bucket_name}/output/{destination_blob_name}")
@@ -113,7 +116,7 @@ def run_it(request):
     output_table = f"{project_id}.hail_demo.hail_events"
     local_geojson = download_to_local(request, local_outfile_name, tmpdir)
     input_schema = convert_to_newline(local_geojson, converted_file)
-    gcs_uri = upload_to_gcs(output_bucket, converted_file, "to_load.json")
+    gcs_uri = upload_to_gcs(dest_bucket, converted_file, "to_load.json")
     output_tables = load_to_bq(output_table, input_schema, gcs_uri)
     return_value.append(output_tables)
     return_json = json.dumps({"replies": return_value})
