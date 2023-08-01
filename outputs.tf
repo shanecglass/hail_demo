@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-# output "dataform_repo_url" {
-#   value       = "https://console.cloud.google.com/bigquery/dataform/locations/us-central1/repositories/${google_dataform_repository.cleaning_repo.name}/details/workspaces?project=${var.project_id}"
-#   description = "The URL to launch the Dataform UI for the repo created"
-# }
+output "dataform_repo_url" {
+  value       = "https://console.cloud.google.com/bigquery/dataform/locations/us-central1/repositories/${google_dataform_repository.cleaning_repo.name}/details/workspaces?project=${var.project_id}"
+  description = "The URL to launch the Dataform UI for the repo created"
+}
 
 output "bigquery_editor_url" {
   value       = "https://console.cloud.google.com/bigquery?project=${var.project_id}"
