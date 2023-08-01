@@ -316,14 +316,16 @@ resource "google_dataform_repository" "cleaning_repo" {
 }
 */
 
-resource "time_sleep" "wait_after_dataform_repo" {
-  depends_on      = [google_dataform_repository.cleaning_repo]
-  create_duration = "60s"
-}
 
 data "google_project" "project" {
   project_id = module.project-services.project_id
-  depends_on = [ time_sleep.wait_after_dataform_repo ]
+  # depends_on = [ time_sleep.wait_after_dataform_repo ]
+}
+
+resource "time_sleep" "wait_after_dataform_repo" {
+  # depends_on      = [google_dataform_repository.cleaning_repo]
+  depends_on      = [data.google_project.project]
+  create_duration = "60s"
 }
 
 resource "google_project_iam_member" "dataform_roles" {
