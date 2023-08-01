@@ -63,6 +63,7 @@ resource "google_project_iam_member" "function_manage_roles" {
   for_each = toset([
     "roles/cloudfunctions.admin",         // Service account role to manage access to the remote function
     "roles/storage.objectAdmin",          // Read/write GCS files
+    "roles/bigquery.admin",               // Create jobs and modify BigQuery tables
     "roles/iam.serviceAccountUser"
     ]
   )
