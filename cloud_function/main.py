@@ -80,7 +80,6 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
   bucket = client.bucket(bucket_name)
   blob = bucket.blob(f"output/{destination_blob_name}")
   blob.upload_from_filename(source_file_name)
-  link = blob.path_helper(bucket_name, destination_blob_name)
   print(f"gs://{bucket_name}/output/{destination_blob_name}")
   return(f"gs://{bucket_name}/output/{destination_blob_name}")
 
@@ -112,10 +111,9 @@ def run_it(request):
     return_value = []
     local_outfile_name = "dayone_hail_forecast.geojson"
     output_table = f"{project_id}.hail_demo.hail_events"
-    dest_bucket = output_bucket
     local_geojson = download_to_local(request, local_outfile_name, tmpdir)
     input_schema = convert_to_newline(local_geojson, converted_file)
-    gcs_uri = upload_to_gcs(dest_bucket, converted_file, "to_load.json")
+    gcs_uri = upload_to_gcs(output_bucket, converted_file, "to_load.json")
     output_tables = load_to_bq(output_table, input_schema, gcs_uri)
     return_value.append(output_tables)
     return_json = json.dumps({"replies": return_value})
