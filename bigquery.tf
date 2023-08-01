@@ -302,7 +302,7 @@ resource "google_bigquery_table" "gcs_objects_hail" {
   depends_on = [google_project_iam_member.functions_invoke_roles, google_storage_bucket_object.geojson_upload, google_bigquery_dataset.dest_dataset]
 }
 
-# Create Dataform repository
+/*# Create Dataform repository
 resource "google_dataform_repository" "cleaning_repo" {
   provider            = google-beta
   name                = "Hail_Demo"
@@ -314,6 +314,7 @@ resource "google_dataform_repository" "cleaning_repo" {
 
   depends_on          = [time_sleep.wait_after_apis_activate ]
 }
+*/
 
 resource "time_sleep" "wait_after_dataform_repo" {
   depends_on      = [google_dataform_repository.cleaning_repo]
