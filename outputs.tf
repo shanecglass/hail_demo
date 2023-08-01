@@ -25,7 +25,6 @@ output "bigquery_editor_url" {
 }
 
 output "looker_studio_report_url" {
-
   value       = "https://lookerstudio.google.com/c/reporting/create?c.reportId=92730323-a315-44ad-8fee-0c520f6397aa&ds.hail_impacts.datasourceName=hail_customers&ds.hail_impacts.projectId=${var.project_id}&ds.hail_impacts.type=TABLE&ds.hail_impacts.datasetId=${google_bigquery_dataset.dest_dataset.dataset_id}&ds.hail_impacts.tableId=customers_impacted"
   description = "The URL to create a new Looker Studio report with a sample dashboard for the data"
 }
