@@ -11,9 +11,6 @@ import tempfile
 
 tmpdir = tempfile.mkdtemp()
 converted_file = os.path.join(tmpdir, 'to_load.json')
-dest_bucket = os.environ.get("OUTPUT_BUCKET")
-project_id = os.environ.get("PROJECT_ID")
-region = os.environ.get("REGION")
 
 @functions_framework.http
 def list_gcs_files(request):
@@ -75,18 +72,19 @@ def download_to_local(request, outfilename, tmpdir):
   print(f'{local_file} created')
   return(local_file)
 
-def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
+def upload_to_gcs(output_bucket_name, source_file_name, destination_blob_name):
+  print(output_bucket_name)
   client = gcs.Client()
   print(client)
-  bucket = client.bucket(bucket_name)
+  bucket = client.bucket(output_bucket_name)
   print(bucket)
   blob = bucket.blob(f"output/{destination_blob_name}")
   print(f"Blob is: {blob}")
   blob.upload_from_filename(source_file_name)
-  print(f"gs://{bucket_name}/output/{destination_blob_name}")
-  return(f"gs://{bucket_name}/output/{destination_blob_name}")
+  print(f"gs://{output_bucket_name}/output/{destination_blob_name}")
+  return(f"gs://{output_bucket_name}/output/{destination_blob_name}")
 
-def load_to_bq(dest_table, local_json_schema, file_uri):
+def load_to_bq(dest_table, local_json_schema, file_uri, place):
   client = bigquery.Client()
   if dest_table != None:
     job_config = bigquery.LoadJobConfig(
@@ -97,7 +95,7 @@ def load_to_bq(dest_table, local_json_schema, file_uri):
     load_job = client.load_table_from_uri(
       file_uri,
       dest_table,
-      location=region,  # Must match the destination dataset location.
+      location=place,  # Must match the destination dataset location.
       job_config=job_config,
     )
     load_job.result()  # Waits for the job to complete.
@@ -112,12 +110,18 @@ def load_to_bq(dest_table, local_json_schema, file_uri):
 def run_it(request):
   try:
     return_value = []
+    dest_bucket = os.environ.get("OUTPUT_BUCKET")
+    print(dest_bucket)
+    project_id = os.environ.get("PROJECT_ID")
+    print(dest_bucket)
+    region = os.environ.get("REGION")
+    print(region)
     local_outfile_name = "dayone_hail_forecast.geojson"
     output_table = f"{project_id}.hail_demo.hail_events"
     local_geojson = download_to_local(request, local_outfile_name, tmpdir)
     input_schema = convert_to_newline(local_geojson, converted_file)
     gcs_uri = upload_to_gcs(dest_bucket, converted_file, "to_load.json")
-    output_tables = load_to_bq(output_table, input_schema, gcs_uri)
+    output_tables = load_to_bq(output_table, input_schema, gcs_uri, region)
     return_value.append(output_tables)
     return_json = json.dumps({"replies": return_value})
     return return_json

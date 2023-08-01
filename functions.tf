@@ -13,10 +13,6 @@ resource "google_cloudfunctions2_function" "geojson_load" {
         object = google_storage_bucket_object.function_upload.name
       }
     }
-    environment_variables = {
-      "OUTPUT_BUCKET":"${substr(google_storage_bucket.geojson_bucket.url, 5, -1)}",
-      "PROJECT_ID":"${module.project-services.project_id}",
-      "REGION":"${var.region}"}
   }
 
   service_config {
@@ -29,6 +25,10 @@ resource "google_cloudfunctions2_function" "geojson_load" {
     ingress_settings = "ALLOW_ALL"
     all_traffic_on_latest_revision = true
     service_account_email = google_service_account.cloud_function_manage_sa.email
+    environment_variables = {
+      "OUTPUT_BUCKET":"${substr(google_storage_bucket.geojson_bucket.url, 5, -1)}",
+      "PROJECT_ID":"${module.project-services.project_id}",
+      "REGION":"${var.region}"}
   }
 
   depends_on = [google_storage_bucket_object.function_upload, google_project_iam_member.function_manage_roles]
