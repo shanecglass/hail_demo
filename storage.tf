@@ -36,7 +36,7 @@ resource "google_storage_bucket" "geojson_bucket" {
   depends_on = [ time_sleep.wait_after_apis_activate ]
 }
 
-# Upload sample sample hail events file
+# Upload sample hail events file
 resource "google_storage_bucket_object" "geojson_upload" {
   name   = "input/dayone_hail.geojson"
   bucket = google_storage_bucket.geojson_bucket.name

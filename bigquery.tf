@@ -24,6 +24,134 @@ resource "google_bigquery_dataset" "dest_dataset" {
   depends_on          = [time_sleep.wait_after_apis_activate]
 }
 
+#Create local table for county boundaries
+resource "google_bigquery_table" "counties" {
+  project             = module.project-services.project_id
+  dataset_id          = google_bigquery_dataset.dest_dataset.dataset_id
+  table_id            = var.county_table_id
+  deletion_protection = false
+
+  schema = <<EOF
+  [
+    {
+      "mode": "NULLABLE",
+      "name": "geo_id",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "state_fips_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "county_fips_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "county_gnis_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "county_name",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "lsad_name",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "lsad_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "fips_class_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "mtfcc_feature_class_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "csa_fips_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "cbsa_fips_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "met_div_fips_code",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "functional_status",
+      "type": "STRING"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "area_land_meters",
+      "type": "INTEGER"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "area_water_meters",
+      "type": "INTEGER"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "int_point_lat",
+      "type": "FLOAT"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "int_point_lon",
+      "type": "FLOAT"
+    },
+    {
+      "mode": "NULLABLE",
+      "name": "county_geom",
+      "type": "GEOGRAPHY"
+    }
+  ]
+  EOF
+  depends_on = [ google_bigquery_dataset.dest_dataset ]
+}
+
+#Load county boundary data to BigQuery
+resource "google_bigquery_job" "load_county_geom" {
+  job_id = "load_county_geom"
+  location   = var.region
+  labels = {
+    "my_job" ="load"
+  }
+
+  load {
+    source_uris = ["${var.setup_bucket}/${var.county_geom_data}"]
+
+    destination_table {
+      project_id = module.project-services.project_id
+      dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
+      table_id   = google_bigquery_table.dest_table_customer.table_id
+    }
+    write_disposition     = "WRITE_EMPTY"
+    source_format         = "PARQUET"
+    autodetect            = false
+  }
+  depends_on = [google_bigquery_dataset.dest_dataset, google_bigquery_table.counties]
+
+}
+
 #Create table for sample customer data
 resource "google_bigquery_table" "dest_table_customer" {
   project             = module.project-services.project_id
