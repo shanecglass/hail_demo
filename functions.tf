@@ -14,7 +14,7 @@ resource "google_cloudfunctions2_function" "geojson_load" {
       }
     }
     environment_variables = {
-      "OUTPUT_BUCKET":"${substr(google_storage_bucket.geojson_bucket.url, 3, -1)}",
+      "OUTPUT_BUCKET":"${substr(google_storage_bucket.geojson_bucket.url, 5, -1)}",
       "PROJECT_ID":"${module.project-services.project_id}",
       "REGION":"${var.region}"}
   }
