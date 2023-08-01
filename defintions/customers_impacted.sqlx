@@ -57,7 +57,7 @@ with hold AS (
     counties.lsad_name,
     counties.county_geom
   FROM
-    `bigquery-public-data.geo_us_boundaries.counties` counties,
+    `hail_demo.county_boundaries` counties,
     `hail_demo.hail_events` hail_polygons
   WHERE
     counties.state_fips_code IN ("17", "18", "21", "26", "39", "54")
