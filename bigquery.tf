@@ -142,7 +142,7 @@ resource "google_bigquery_job" "load_county_geom" {
     destination_table {
       project_id = module.project-services.project_id
       dataset_id = google_bigquery_dataset.dest_dataset.dataset_id
-      table_id   = google_bigquery_table.dest_table_customer.table_id
+      table_id   = google_bigquery_table.counties.table_id
     }
     write_disposition     = "WRITE_EMPTY"
     source_format         = "PARQUET"
