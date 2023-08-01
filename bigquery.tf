@@ -297,7 +297,7 @@ resource "google_bigquery_table" "dest_table_customer" {
     {
       "description": "Geographic representation of the bank's physical location",
       "name": "bank_geom",
-      "type": "STRING"
+      "type": "GEOGRAPHY"
     }]
   EOF
   depends_on = [ google_bigquery_dataset.dest_dataset ]
