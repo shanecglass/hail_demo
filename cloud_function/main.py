@@ -78,10 +78,10 @@ def download_to_local(request, outfilename, tmpdir):
 def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
   client = gcs.Client()
   print(client)
-  bucket = client.Bucket(bucket_name)
+  bucket = client.bucket(bucket_name)
   print(bucket)
   blob = bucket.blob(f"output/{destination_blob_name}")
-  print(blob)
+  print(f"Blob is: {blob}")
   blob.upload_from_filename(source_file_name)
   print(f"gs://{bucket_name}/output/{destination_blob_name}")
   return(f"gs://{bucket_name}/output/{destination_blob_name}")
