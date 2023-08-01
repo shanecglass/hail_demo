@@ -129,8 +129,8 @@ resource "google_bigquery_table" "counties" {
 }
 
 #Load county boundary data to BigQuery
-resource "google_bigquery_job" "load_county_geom" {
-  job_id = "load_county_geom"
+resource "google_bigquery_job" "load_counties_geom" {
+  job_id = "load_counties_geom"
   location   = var.region
   labels = {
     "my_job" ="load"
