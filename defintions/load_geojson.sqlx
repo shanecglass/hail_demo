@@ -1,21 +1,16 @@
 config {
   type: "table",
   columns: {
-    DN: "Unused in this demo",
-    VALID: "Used as proxy for time of a storm event in this demo",
-    EXPIRE: "Unused in this demo",
-    ISSUE: "Unused in this demo",
-    LABEL: "First probability label. Contains either the probability of hail event or SIGN, which indicates a potential significant hail event",
-    LABEL2: "Second probability label. Contains the full text description of hail event probability",
-    stroke: "Unused in this demo",
-    fill: "Unused in this demo",
-    geometry: "Geographic representation of the area to which the hail event probability applies"
+    ingestion_output: "Output of the ingestion script",
+    ingest_timestamp: "Timestamp when the table was last ingested",
+    file_converted: "GCS URI of the file that was loaded to BigQuery",
+    md5_hash: "MD5 hash of the file ingested to BigQuery. This can be used as the primary key if needed",
   }
 }
 
 # This runs the remote function that loads GeoJSON files to BigQuery and logs a few data points about the load job to a different BigQuery table.
 SELECT
-  `hail_demo.geojson_loader` (uri), CURRENT_TIMESTAMP() AS ingest_timestamp, uri AS file_converted, md5_hash
+  `hail_demo.geojson_loader` (uri) AS ingestion_output, CURRENT_TIMESTAMP() AS ingest_timestamp, uri AS file_converted, md5_hash
 FROM
   `hail_demo.gcs_hail_inputs`
 
