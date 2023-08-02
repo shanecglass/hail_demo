@@ -433,7 +433,7 @@ resource "google_bigquery_table" "gcs_objects_hail" {
 # Create Dataform repository
 resource "google_dataform_repository" "cleaning_repo" {
   provider            = google-beta
-  name                = "Hail_Demo"
+  name                = "hail_demo"
   region              = var.region
 
   workspace_compilation_overrides {
