@@ -52,16 +52,18 @@ with hold AS (
   SELECT
     hail_polygons.LABEL AS LABEL,
     hail_polygons.LABEL2 AS LABEL2,
-    PARSE_TIMESTAMP("%Y%m%d%H%M", hail_polygons.VALID, "-5:00") AS valid,
+    PARSE_TIMESTAMP("%Y%m%d%H%M", hail_polygons.VALID, "-5:00") AS last_updated,
     hail_polygons.geometry AS hail_geom,
     counties.lsad_name,
-    counties.county_geom
+    counties.county_geom,
+    counties.county_fips_code,
+    counties.state_fips_code
   FROM
     `hail_demo.county_boundaries` counties,
     `hail_demo.hail_events` hail_polygons
   WHERE
     counties.state_fips_code IN ("17", "18", "21", "26", "39", "54")
-    AND ST_TOUCHES(counties.county_geom, hail_polygons.geometry)
+    AND ST_INTERSECTS(counties.county_geom, hail_polygons.geometry)
 ),
 
 /* Find a list of all customers whose location falls within the counties that have overlap with the storm area.
@@ -90,13 +92,14 @@ SELECT
     ELSE FALSE
   END as significant_severe,
   hold.lsad_name AS county_name,
-  hold.valid AS event_timestamp,
+  hold.last_updated AS valid,
   potential_customers_impacted.* EXCEPT (branch_address),
   CONCAT(branch_address, ", ", branch_city, ", ", state, " ", zip_code) AS customer_address,
   CONCAT(ST_Y(customer_geom), ", ", ST_X(customer_geom)) AS customer_location,
-  REGEXP_EXTRACT(potential_customers_impacted.county_fips_code, r"^([\d]{2}).*") AS state_fips_code
+  hold.state_fips_code AS state_fips_code,
 FROM
   potential_customers_impacted,
   hold
 WHERE
-  ST_WITHIN(potential_customers_impacted.customer_geom, hold.hail_geom)
+  hold.state_fips_code IN ("17", "18", "21", "26", "39", "54")
+  AND ST_WITHIN(potential_customers_impacted.customer_geom, hold.hail_geom)
