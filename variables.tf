@@ -50,6 +50,12 @@ variable "hail_event_table_id" {
   default = "hail_events"
 }
 
+variable "county_table_id" {
+  type = string
+  description = "BigQuery table ID for county boundaries"
+  default = "county_boundaries"
+}
+
 variable "setup_bucket" {
   type = string
   description = "Name of the GCS bucket that holds the sample customer data"
@@ -72,6 +78,12 @@ variable "customer_sample_data" {
   type = string
   description = "File name of sample customer data in the GCS bucket defined in var.setup_bucket"
   default = "us_banks.parquet"
+}
+
+variable "county_geom_data" {
+  type = string
+  description = "File name of county boundaries data in the GCS bucket defined in var.setup_bucket"
+  default = "county_geom.parquet"
 }
 
 variable "functions_source" {
