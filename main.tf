@@ -81,7 +81,7 @@ resource "google_project_iam_member" "function_manage_roles" {
 }
 
 resource "time_sleep" "wait_after_all_resources" {
-  create_duration = "60s"
+  create_duration = "120s"
   depends_on = [
     module.project-services,
     google_project_iam_member.function_manage_roles,
@@ -94,6 +94,7 @@ resource "time_sleep" "wait_after_all_resources" {
     google_project_iam_member.functions_invoke_roles,
     google_bigquery_table.gcs_objects_hail,
     google_dataform_repository.cleaning_repo,
-    google_project_iam_member.dataform_roles
+    google_project_iam_member.dataform_roles,
+    terraform_data.bld_and_deploy
   ]
 }

@@ -476,5 +476,5 @@ resource "terraform_data" "bld_and_deploy"{
       """
     EOT
   }
-  depends_on = [time_sleep.wait_after_apis_activate]
+  depends_on = [time_sleep.wait_after_apis_activate, google_bigquery_dataset.dest_dataset, google_bigquery_connection.function_connection, google_bigquery_table.gcs_objects_hail]
 }

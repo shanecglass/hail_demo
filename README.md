@@ -1,9 +1,15 @@
-# Customer impacts of hail - BigQuery GIS & Remote Functions demo
+# Finding hail-impacted customers - BigQuery GIS & Remote Functions demo
 
 This repo provides an example of how BigQuery GIS and Remote Functions can be used to load GeoJSON files to BigQuery and determine which customers are potentially impacted by hail storms. The following instructions should help you get started.
 
 Before you start: Though using a new GCP project for this example is not a requirement, it might be easiest to use a new GCP project for this. This makes cleanup much easier, as you can delete the whole project to ensure all assets are removed and it ensures no potential conflicts with existing resources. You can also remove resources by running `terraform destroy` after you deploy the resources
 
+# Architecture Diagram
+<p align="center">
+  <img src="./architecture_diagram.png" alt="Architecture Diagram" width=800px>
+</p>
+
+# Deploying the infrastructure
 ## Setup
 ### 0. Clone this repo in Cloud Shell
 #### 1. You'll need to set your Google Cloud project in Cloud Shell, clone this repo locally first, and set the working directory to this folder using the following commands.
