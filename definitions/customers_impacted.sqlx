@@ -78,7 +78,6 @@ potential_customers_impacted AS (
     customers.state IN ("IL", "IN", "KY", "MI", "OH", "WV" )
     AND ST_WITHIN(customers.customer_geom, hold.county_geom)
 )
-
 /* This takes the customer subset identified in the previous statement, and determines if the customer location is within with the storm area.
 This is more computationally efficient than checking if every customer nationwide falls within the storm area, even though it is an extra step */
 SELECT
@@ -103,3 +102,4 @@ FROM
 WHERE
   hold.state_fips_code IN ("17", "18", "21", "26", "39", "54")
   AND ST_WITHIN(potential_customers_impacted.customer_geom, hold.hail_geom)
+  AND ST_WITHIN(potential_customers_impacted.customer_geom, hold.county_geom)
