@@ -128,7 +128,7 @@ resource "google_bigquery_table" "counties" {
 
 #Load county boundary data to BigQuery
 resource "google_bigquery_job" "load_counties_geom" {
-  job_id = "load_counties_geom_${random_id.default}"
+  job_id = "load_counties_geom_${random_id.default.hex}"
   location   = var.region
   labels = {
     "my_job" ="load"
@@ -302,7 +302,7 @@ resource "google_bigquery_table" "dest_table_customer" {
 
 #Load sample customer data to BigQuery
 resource "google_bigquery_job" "load_samples_customer" {
-  job_id = "load_sample_customer_${random_id.default}"
+  job_id = "load_sample_customer_${random_id.default.hex}"
   location   = var.region
   labels = {
     "my_job" ="load"
