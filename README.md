@@ -54,8 +54,8 @@ enable_apis = true
 force_destroy = false
 
 # Whether or not to protect Cloud Storage resources from deletion when solution is modified or changed.
-# Example: true
-deletion_protection = true
+# Example: false
+deletion_protection = false
 ```
 #### 4. Verify that the Terraform configuration has no errors
 Run the following:
