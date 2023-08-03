@@ -1,4 +1,4 @@
-# Finding hail-impacted customers - BigQuery GIS & Remote Functions demo
+# Identifying hail-impacted customers - BigQuery GIS & Remote Functions demo
 
 This repo provides an example of how BigQuery GIS and Remote Functions can be used to load GeoJSON files to BigQuery and determine which customers are potentially impacted by hail storms. The following instructions should help you get started.
 
