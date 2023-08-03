@@ -128,9 +128,14 @@ resource "google_bigquery_table" "counties" {
   depends_on = [ google_bigquery_dataset.dest_dataset ]
 }
 
+#Create a random ID to name load jobs so they can be run after using Terraform delete more smoothly
+resource "random_id" "default" {
+  byte_length = 8
+}
+
 #Load county boundary data to BigQuery
 resource "google_bigquery_job" "load_counties_geom" {
-  job_id = "load_counties_geom"
+  job_id = "load_counties_geom_${random_id.default}"
   location   = var.region
   labels = {
     "my_job" ="load"
@@ -149,7 +154,6 @@ resource "google_bigquery_job" "load_counties_geom" {
     autodetect            = false
   }
   depends_on = [google_bigquery_dataset.dest_dataset, google_bigquery_table.counties]
-
 }
 
 #Create table for sample customer data
@@ -305,7 +309,7 @@ resource "google_bigquery_table" "dest_table_customer" {
 
 #Load sample customer data to BigQuery
 resource "google_bigquery_job" "load_samples_customer" {
-  job_id = "load_sample_customer"
+  job_id = "load_sample_customer_${random_id.default}"
   location   = var.region
   labels = {
     "my_job" ="load"
