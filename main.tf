@@ -43,6 +43,12 @@ resource "time_sleep" "wait_after_apis_activate" {
   create_duration = "120s"
 }
 
+#Create a random ID to name load jobs so they can be run after using Terraform delete more smoothly and create universally unique GCS buckets
+resource "random_id" "default" {
+  byte_length = 8
+  depends_on = [ time_sleep.wait_after_apis_activate ]
+}
+
 resource "google_project_service_identity" "cloud_functions" {
   provider = google-beta
   project  = module.project-services.project_id

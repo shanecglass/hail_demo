@@ -1,7 +1,3 @@
-resource "random_id" "default" {
-  byte_length = 8
-}
-
 #Create bucket for Cloud Function source
 resource "google_storage_bucket" "function_source" {
 
