@@ -107,7 +107,18 @@ Update your Dataform Workspace's `dataform.json` file as described below:
 ```
 
 #### 3. Add the definitions files to Dataform
-Remove the sample view files and add the Dataform queries found in the [definitions](./definitions) to the definitions folder to your Workspace. Click the 3-dot menu next to your Dataform Workspace's definitions folder in the UI to create a new file. Start the workflow execution for all actions. These will load the polygons defined in the GeoJSON file into BigQuery, then find the customers who are within that area. Be sure the file names in your Dataform Workspace's definitions folder match those of the files provided and include the .sqlx extension.
+Next, add the following files from the [definitions](./definitions/) folder to your Dataform workspace:
+  - [load_geojson](./definitions/load_geojson.sqlx) - This calls the remote function created by the Terraform script to load the polygons defined in the GeoJSON file into BigQuery
+  - [convert_customer_geog](./definitions/convert_customer_geog.sqlx) - This cleans the sample customer table and converts the `customer_geog` column to a GEOGRAPHY type. This might not be necessary if your customer data already has locations stored as GEOGRAPHY columns in BigQuery
+  - [customers_impacted](./definitions/customers_impacted.sqlx) - This finds which customer locations fall within the hail polygon, indicating customers who were impacted by the storm
+
+To add the files to your Workspace:
+  - Remove the sample view files in your Datawork workspace's definitions folder.
+  - Click the 3-dot menu next to your Dataform Workspace's definitions folder in the UI and select `Create file`
+  - Name the file so it matches the examples provided and be sure to include the `.sqlx` extension. For example, the "Add a file path" field for the `load_geojson` file should read `definitions/load_geojson.sqlx`
+  - Copy and paste the code from the file into the Dataform IDE.
+
+Once the files are added, click `Start Execution` at the top of the Dataform IDE and select `All Actions` to run the full pipeline. Click the `Start Execution` button in the confirmation screen that pops up to run the workflow. You can see the status of your execution by clicking `Details` in the notification at the bottom of the screen, or clicking `Executions` at the top of the IDE
 
 ### 3. **Analyze your results!**
-From here, you can get started analyzing the data! Head to the BigQuery console to see the table of the customers who were impacted by the hail event. You can use
+From here, click on the Looker Studio link in your Terraform outputs to start analyzing the data using a pre-built template. You can also head to the BigQuery console to see the table of the customers who were impacted by the hail event. If you need to see your Terraform outputs again, simply enter `terraform output` into your command line.
